@@ -9,6 +9,7 @@ const socketio = require('socket.io');
 const app = express();
 const indexRouter = require('./routes/index');
 const chatRouter = require('./routes/chat');
+const transferRouter = require('./routes/transfer');
 
 const http_server = http.createServer(app);
 const io = socketio.listen(http_server);
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/chat', chatRouter);
+app.use('/transfer', transferRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
