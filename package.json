@@ -14,8 +14,8 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon index.js",
-    "start": "NODE_ENV=production node index.js"
+    "dev": "NODE_ENV=development nodemon app.js",
+    "start": "NODE_ENV=production node app.js"
   },
   "repository": {
     "type": "git",
