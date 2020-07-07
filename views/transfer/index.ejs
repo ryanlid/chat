@@ -1,0 +1,95 @@
+<%- include('../layout/header') %>
+
+<section class="section">
+  <div class="container">
+    <div class="box">
+      <div class="level">
+        <div class="level-left">
+          <span class="tag is-white">状态</span>
+          <span class="tag is-warning">未连接</span>
+          <span class="tag is-warning">连接中</span>
+          <span class="tag is-warning">等待对方连接</span>
+          <span class="tag is-success">已连接</span>
+          <div class="buttons ml-3">
+            <button class="button is-small is-info" disabled id="connect">
+              连接
+            </button>
+            <button class="button is-small is-danger" disabled id="disconnect">
+              断开
+            </button>
+          </div>
+        </div>
+        <div class="level-right">
+          <span class="tag is-info">分享链接</span>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <form id="transfer-form">
+        <div class="file">
+          <label class="file-label">
+            <input class="file-input" type="file" name="file" id="file" />
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">
+                选择文件
+              </span>
+            </span>
+          </label>
+          <button class="button is-info ml-2" disabled>发送</button>
+        </div>
+      </form>
+    </div>
+    <div class="box">
+      <!-- 发送文件 -->
+      <div class="mb-2">
+        <span class="tag is-info">
+          正在发送
+        </span>
+        <span>
+          我的文件1
+        </span>
+      </div>
+
+      <div class="level">
+        <progress class="progress is-primary" value="20" max="100"> </progress>
+      </div>
+      <!-- / 发送文件结束 -->
+
+      <!-- 接收文件 -->
+      <div class="mb-2">
+        <span class="tag is-info">
+          正在接收
+        </span>
+        <span>
+          我的文件2
+        </span>
+      </div>
+      <div class="level">
+        <progress class="progress is-primary" value="20" max="100"> </progress>
+      </div>
+      <!-- / 接收文件结束 -->
+    </div>
+
+    <div class="box">
+      <h3 class="title is-3 border">文件列表</h3>
+      <ul>
+        <li>
+          <i class="fas fa-cloud-download-alt"></i>
+          <a href="#">我的文件1</a>
+        </li>
+        <li>
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>我的文件2</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+<%- include('../layout/footer') %>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/transfer.js"></script>
+
+<%- include('../layout/foot') %>
