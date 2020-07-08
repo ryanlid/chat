@@ -7,14 +7,20 @@ var pc = null;
 var dc = null;
 var room = '';
 
+var roomLink = document.querySelector('#roomLink');
+
 var sendProgress = document.querySelector('#sendProgress');
 var receiveProgress = document.querySelector('#receiveProgress');
 
+var sendingFileName = document.querySelector('#sendingFileName');
+var receivingFileName = document.querySelector('#receivingFileName');
+
 var sendFileList = document.getElementById('sendFileList');
 var receiveFileList = document.getElementById('receiveFileList');
+var transferedFileList = document.getElementById('transferedFileList');
 
 var fileInput = document.getElementById('file');
-var upload = document.getElementById('upload');
+var sendFile = document.getElementById('sendFile');
 
 // 收到的文件
 var receiveBuffer = [];
@@ -28,6 +34,32 @@ var receiveFileName = '';
 // 16k  16384
 // 32k  32768
 var chunkSize = 8192;
+
+function getUrlQueryString(name, path) {
+  if (!path) {
+    path = window.location.search;
+  }
+
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+  var r = path.substr(1).match(reg);
+  if (r != null) {
+    return decodeURI(r[2]);
+  }
+  return null;
+}
+
+if (getUrlQueryString('id')) {
+  room = getUrlQueryString('id');
+} else {
+  room = Math.round(Math.random() * 10000);
+}
+
+roomLink.setAttribute(
+  'href',
+  location.origin + location.pathname + '?id=' + room
+);
+
+roomLink.textContent = room;
 
 transferForm.addEventListener('submit', uploadFile);
 
@@ -43,7 +75,10 @@ function uploadFile(e) {
 
     fileInfo.size = file.size;
     fileInfo.name = file.name;
-    console.log(fileInfo);
+
+    sendingFileName.textContent = file.name;
+
+    console.log('fileInfo', fileInfo);
 
     // 发送进度最大值：文件大小
     sendProgress.max = file.size;
@@ -70,9 +105,13 @@ function uploadFile(e) {
         readSlice(offset);
       } else {
         console.log('发送完成');
-        var fileItem = document.createElement('div');
-        fileItem.textContent = file.name;
-        sendFileList.appendChild(fileItem);
+        var fileItem = document.createElement('li');
+        var iEl = document.createElement('i');
+        iEl.classList.add('fas', 'fa-cloud-upload-alt');
+
+        fileItem.textContent = ' ' + file.name;
+        fileItem.insertBefore(iEl, fileItem.firstChild);
+        transferedFileList.appendChild(fileItem);
       }
     };
 
@@ -146,6 +185,8 @@ function recevemsg(e) {
     var fileInfo = JSON.parse(e.data);
     receiveFileSize = fileInfo.size;
     receiveFileName = fileInfo.name;
+    receivingFileName.textContent = fileInfo.name;
+
     // 接收进度最大值：文件大小
     receiveProgress.max = fileInfo.size;
     return;
@@ -162,23 +203,30 @@ function recevemsg(e) {
     receiveFileSize = 0;
     var blob = new Blob(receiveBuffer);
     var link = window.URL.createObjectURL(blob);
-    var fileItem = document.createElement('div');
+    var fileItem = document.createElement('li');
+
+    var iEl = document.createElement('i');
+    iEl.classList.add('fas', 'fa-cloud-download-alt');
+    fileItem.appendChild(iEl);
+    transferedFileList.appendChild(fileItem);
+
     var aDownload = document.createElement('a');
 
     aDownload.href = link;
-    aDownload.textContent = receiveFileName;
+    aDownload.textContent = ' ' + receiveFileName;
     aDownload.setAttribute('download', receiveFileName);
 
     fileItem.appendChild(aDownload);
-    receiveFileList.appendChild(fileItem);
+    transferedFileList.appendChild(fileItem);
   }
 }
 
 function dataChannelStateChange(e) {
   if (e.type === 'open') {
-    upload.disabled = false;
+    showConnectStatus('success', '已连接');
+    sendFile.disabled = false;
   } else if (e.type === 'close') {
-    upload.disabled = true;
+    sendFile.disabled = true;
   }
 }
 
@@ -225,13 +273,16 @@ function createPeerConnection() {
 // 连接信令服务器
 function connect() {
   socket = io.connect();
+
   socket.on('joined', (roomid, socketid) => {
     console.log('joined message : ', roomid, socketid);
     state = 'joined';
     createPeerConnection();
+    showConnectStatus('success', '等待对方连接');
   });
 
   socket.on('otherjoined', (roomid, socketid) => {
+    showConnectStatus('success', '对方正在连接');
     console.log('otherjoined message : ', roomid, socketid);
 
     if (state === 'joined_unbind') {
@@ -291,6 +342,33 @@ function connect() {
 // connect()
 
 // 加入
-// btnConnect.addEventListener('click', connect);
+btnConnect.addEventListener('click', function () {
+  btnConnect.style.display = 'none';
+  btnDisconnect.style.display = 'inline-flex';
+  connect();
+});
+
 // 离开
-// btnDisconnect.addEventListener('click', disconnect);
+btnDisconnect.addEventListener('click', function () {
+  btnConnect.style.display = 'inline-flex';
+  btnDisconnect.style.display = 'none';
+  showConnectStatus('warning', '未连接');
+  disconnect();
+});
+
+function showConnectStatus(type, massage) {
+  var span = document.createElement('span');
+  span.classList.add('tag');
+  if (type === 'warning') {
+    span.classList.add('is-warning');
+  }
+  if (type === 'info') {
+    span.classList.add('is-info');
+  }
+  if (type === 'success') {
+    span.classList.add('is-success');
+  }
+  span.textContent = massage;
+  document.getElementById('connect-status').innerHTML = span.outerHTML;
+  return span;
+}

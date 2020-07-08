@@ -6,21 +6,27 @@
       <div class="level">
         <div class="level-left">
           <span class="tag is-white">状态</span>
-          <span class="tag is-warning">未连接</span>
-          <span class="tag is-warning">连接中</span>
-          <span class="tag is-warning">等待对方连接</span>
-          <span class="tag is-success">已连接</span>
+          <div id="connect-status">
+            <span class="tag is-warning">未连接</span>
+          </div>
           <div class="buttons ml-3">
-            <button class="button is-small is-info" disabled id="connect">
+            <button class="button is-small is-info" id="connect">
               连接
             </button>
-            <button class="button is-small is-danger" disabled id="disconnect">
+            <button
+              class="button is-small is-danger"
+              style="display: none;"
+              id="disconnect"
+            >
               断开
             </button>
           </div>
         </div>
         <div class="level-right">
-          <span class="tag is-info">分享链接</span>
+          <span class="tags">
+            <span class="tag is-info">ID</span>
+            <a href="#" id="roomLink" class="tag is-link"></a>
+          </span>
         </div>
       </div>
     </div>
@@ -38,7 +44,9 @@
               </span>
             </span>
           </label>
-          <button class="button is-info ml-2" disabled>发送</button>
+          <button class="button is-info ml-2" disabled id="sendFile">
+            发送
+          </button>
         </div>
       </form>
     </div>
@@ -48,13 +56,17 @@
         <span class="tag is-info">
           正在发送
         </span>
-        <span>
-          我的文件1
-        </span>
+        <span id="sendingFileName"> </span>
       </div>
 
       <div class="level">
-        <progress class="progress is-primary" value="20" max="100"> </progress>
+        <progress
+          id="sendProgress"
+          class="progress is-primary"
+          value="0"
+          max="100"
+        >
+        </progress>
       </div>
       <!-- / 发送文件结束 -->
 
@@ -63,28 +75,23 @@
         <span class="tag is-info">
           正在接收
         </span>
-        <span>
-          我的文件2
-        </span>
+        <span id="receivingFileName"> </span>
       </div>
       <div class="level">
-        <progress class="progress is-primary" value="20" max="100"> </progress>
+        <progress
+          id="receiveProgress"
+          class="progress is-primary"
+          value="0"
+          max="100"
+        >
+        </progress>
       </div>
       <!-- / 接收文件结束 -->
     </div>
 
     <div class="box">
       <h3 class="title is-3 border">文件列表</h3>
-      <ul>
-        <li>
-          <i class="fas fa-cloud-download-alt"></i>
-          <a href="#">我的文件1</a>
-        </li>
-        <li>
-          <i class="fas fa-cloud-upload-alt"></i>
-          <span>我的文件2</span>
-        </li>
-      </ul>
+      <ul id="transferedFileList"></ul>
     </div>
   </div>
 </section>
